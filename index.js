@@ -36,7 +36,8 @@ function create() {
     const text = this.add.text(350, 250, '', { font: '16px Courier', fill: '#00ff00' });
     
     this.add.existing(container);
-    //this.add.rectangle(400,300,800,600).setFillStyle(0xffff00);
+    console.log(this.width);
+    this.add.rectangle(400,300,this.width,this.height).setFillStyle(0xffff00);
     var blocks = this.physics.add.group({key: 'cursor', frameQuantity: 6, setXY: { x: 100, y: 400, stepX: 100 }});
     circ = this.add.circle(200, 100, 50);
     cursor = this.add.image(0,0,'cursor');
@@ -71,9 +72,34 @@ function create() {
         cursor.setVisible(true).setPosition(pointer.x, pointer.y);
     },this);
 }
-function leafOut(){
+function leafOut(context, x,y){
+    if(x>=800){
+        x = 770;
+    }
+    else if(x<=0){
+        x = 20;
+    }
+    if(y>= 600){
+        y = 570;
+    }
+    else if(y<=0){
+        y=20;
+    }
+    
 
+    var popup = context.add.text(x,y, "+1");
+    var tween = context.tweens.add({
+        targets: popup,
+        alpha: 0,
+        duration: 1500,
+        ease: 'Power0'
+      }, context);
+    tween.on('complete', function(){
+        //console.log(popup)
+        popup.destroy();
+    });
 }
+
 function update() {
     var bodies = this.physics.overlapCirc(circ.x, circ.y, circ.radius, true, true);
     for(var i =0; i<bodies.length; i++){
@@ -87,9 +113,11 @@ function update() {
         var leaf = sprites.getAt(i);
         if(!container.contains( leaf.x, leaf.y)){
             //console.log("here");
+            leafOut(this, leaf.x,leaf.y);
             leaf.destroy();
             cursor.data.values.Leafs += 1;
             sprites.remove(leaf);
+            
         }
         //sprites[i].setVelocity(0);
     }
